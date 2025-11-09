@@ -30,7 +30,12 @@ public class RecordType {
     public Type getType() {
         return this.type;
     }
-
+    public String getName(){
+        return this.name;
+    }
+    public String getRecordTypeId(){
+        return this.recordTypeId;
+    }
     public User getUser(){
         System.out.println("Record type id " + this.recordTypeId);
         return this.user;

@@ -8,6 +8,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/record-types")
 public class RecordTypeController {
@@ -25,5 +28,10 @@ public class RecordTypeController {
     ) {
         RecordType created = recordTypeService.createRecordType(request, userDetails.getUsername());
         return ResponseEntity.ok(created);
+    }
+    @GetMapping("/all-records")
+    public ResponseEntity<List<RecordType>> getRecordTypes(@AuthenticationPrincipal UserDetails userDetails) {
+        List<RecordType> list = recordTypeService.getRecordTypes(userDetails.getUsername());
+        return ResponseEntity.ok(list);
     }
 }

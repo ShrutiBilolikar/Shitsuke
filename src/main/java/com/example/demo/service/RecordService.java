@@ -8,6 +8,8 @@ import com.example.demo.repo.RecordRepository;
 import com.example.demo.repo.RecordTypeRepository;
 import com.example.demo.repo.UserRepository;
 import org.springframework.stereotype.Service;
+import java.util.UUID;
+import java.util.List;
 
 @Service
 public class RecordService {
@@ -69,5 +71,9 @@ public class RecordService {
                 .filter(rt -> rt.getUser().equals(user))
                 .orElseThrow(() -> new RuntimeException("RecordType not found for this user"));
 
+    }
+
+    public List<Record>getRecordsForType(String recordTypeId,String email){
+        return recordRepository.findRecordsByTypeAndUser(recordTypeId,email);
     }
 }

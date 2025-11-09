@@ -10,6 +10,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/records")
 public class RecordController {
@@ -27,6 +30,7 @@ public class RecordController {
     }
     @GetMapping("/summary/{recordTypeId}")
     public ResponseEntity<?>getSummary(@PathVariable String recordTypeId,@RequestParam int month, @RequestParam int year, @AuthenticationPrincipal UserDetails userDetails){
+        System.out.println("[RecordController#getSummary] recordTypeId=" + recordTypeId + ", month=" + month + ", year=" + year + ", user=" + (userDetails == null ? "null" : userDetails.getUsername()));
         String userEmail = userDetails.getUsername();
         RecordType rt = recordService.getRecordTypeForUser(recordTypeId, userEmail);
         if(rt.getType() == Type.Number){
@@ -37,5 +41,13 @@ public class RecordController {
         } else {
             return ResponseEntity.ok("No numeric summary for this type");
         }
+    }
+    @GetMapping("/record-type/{id}")
+    public ResponseEntity<List<Record>> getRecordsByRecordType(
+            @PathVariable String id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        List<Record> records = recordService.getRecordsForType(id, userDetails.getUsername());
+        return ResponseEntity.ok(records);
     }
 }

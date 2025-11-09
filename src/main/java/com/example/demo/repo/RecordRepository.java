@@ -21,4 +21,6 @@ public interface RecordRepository extends JpaRepository<Record,String > {
     @Query("SELECT COUNT(r) FROM Record r WHERE r.recordType = :recordType AND r.rawData = 'true' AND MONTH(r.recordDate) = :month AND YEAR(r.recordDate) = :year")
     Long getCountForMonth(@Param("recordType") RecordType recordType, @Param("month") int month, @Param("year") int year);
 
+    @Query("SELECT r FROM Record r WHERE r.recordType.id = :recordTypeId AND r.recordType.user.email = :email")
+    List<Record>findRecordsByTypeAndUser(@Param("recordTypeId")String recordTypeId, @Param("email")String email);
 }
