@@ -27,7 +27,9 @@ public class Record {
     @ManyToOne
     @JoinColumn(name = "record_type_id", referencedColumnName = "recordTypeId")
     private RecordType recordType;
-
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    private User user;
 
     public void setRawData(String rawData) {
         this.rawData = rawData;
@@ -42,5 +44,32 @@ public class Record {
     }
     public void setType(Type type){
         this.type = type;
+    }
+    public String getRecordId() {
+        return recordId;
+    }
+
+    public LocalDate getRecordDate() {
+        return recordDate;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public String getRawData() {
+        return rawData;
+    }
+
+    public RecordType getRecordType() {
+        return recordType;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

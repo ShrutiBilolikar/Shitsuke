@@ -1,13 +1,16 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.RecordCreateRequest;
 import com.example.demo.dto.RecordRequest;
 import com.example.demo.model.Record;
 import com.example.demo.model.RecordType;
 import com.example.demo.model.User;
-import com.example.demo.repo.RecordRepository;
-import com.example.demo.repo.RecordTypeRepository;
-import com.example.demo.repo.UserRepository;
+import com.example.demo.model.UserGroup;
+import com.example.demo.repo.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 import java.util.UUID;
 import java.util.List;
 
@@ -17,34 +20,81 @@ public class RecordService {
     private final RecordRepository recordRepository;
     private final RecordTypeRepository recordTypeRepository;
     private final UserRepository userRepository;
-    public RecordService(RecordRepository recordRepository, RecordTypeRepository recordTypeRepository, UserRepository userRepository) {
+    private final GroupMembershipRepository groupMembershipRepository;
+    private final UserGroupRepository groupRepository;
+    public RecordService(RecordRepository recordRepository,
+                         RecordTypeRepository recordTypeRepository,
+                         UserRepository userRepository,
+                         GroupMembershipRepository groupMembershipRepository,
+                         UserGroupRepository groupRepository) {
         this.recordRepository = recordRepository;
         this.recordTypeRepository = recordTypeRepository;
         this.userRepository = userRepository;
+        this.groupMembershipRepository = groupMembershipRepository;
+        this.groupRepository=groupRepository;
     }
-    public Record createRecord(RecordRequest request, String userEmail) {
-        System.out.println("CREATERECORD"+request+" "+userEmail);
-        User user = userRepository.findByEmail(userEmail).orElseThrow(()-> new RuntimeException("User not found"));
-        RecordType recordType = recordTypeRepository.findById(request.getRecordTypeId())
-                .filter(rt -> rt.getUser().equals(user))
-                .orElseThrow(() -> new RuntimeException("RecordType not found for this user"));
+    @Transactional
+    public Record createRecord(RecordCreateRequest request, String recordTypeId, String userEmail) {
+        RecordType recordType = recordTypeRepository.findById(recordTypeId)
+                .orElseThrow(() -> new RuntimeException("RecordType not found"));
 
-        boolean exists = recordRepository.existsByRecordTypeAndRecordDate(
-                recordType,
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // CRITICAL: Authorization check
+        boolean canAccess = false;
+
+        if (recordType.getIsGroupMetric()) {
+            // For group RecordTypes: check if user is member of any group using this RecordType
+            canAccess = groupMembershipRepository
+                    .isUserMemberOfAnyGroupWithRecordType(userEmail, recordType.getRecordTypeId());
+        } else {
+            // For personal RecordTypes: check if user is the owner
+            canAccess = recordType.getUser().getEmail().equals(userEmail);
+        }
+
+        if (!canAccess) {
+            throw new SecurityException("You don't have access to this RecordType");
+        }
+
+        // Check for duplicate record (same user, recordType, and date)
+        Optional<Record> existing = recordRepository.findByUserAndRecordTypeAndDate(
+                user.getId(),
+                recordType.getRecordTypeId(),
                 request.getRecordDate()
         );
 
-        if (exists) {
-            throw new RuntimeException("Record already exists for this date.");
+        if (existing.isPresent()) {
+            throw new IllegalStateException("You already logged a record for this date");
         }
 
+        // Create record with BOTH user and recordType
         Record record = new Record();
+        record.setUser(user);  // WHO is logging
+        record.setRecordType(recordType);  // WHAT they're tracking
         record.setRecordDate(request.getRecordDate());
+        record.setType(recordType.getType());
         record.setRawData(request.getRawData());
-        record.setRecordType(recordType);
-        record.setType(recordType.getType()); // auto set type
 
         return recordRepository.save(record);
+    }
+    @Transactional
+    public Record createRecordForGroup(String groupId, RecordCreateRequest request, String userEmail) {
+        // Verify user is an active member of the group
+        if (!groupMembershipRepository.isUserActiveMemberOfGroup(groupId, userEmail)) {
+            throw new SecurityException("You are not a member of this group");
+        }
+
+        // Get the group to find its RecordType
+        UserGroup group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+
+        // Create record using the group's RecordType
+        return createRecord(request, group.getRecordType().getRecordTypeId(), userEmail);
+    }
+
+    public List<Record> getRecordsByUserAndType(String userEmail, String recordTypeId) {
+        return recordRepository.findByUserAndRecordType(userEmail, recordTypeId);
     }
 
     public Double getMonthlyTotal(String recordTypeId, int month, int year) {
@@ -74,6 +124,7 @@ public class RecordService {
     }
 
     public List<Record>getRecordsForType(String recordTypeId,String email){
+        System.out.println("RECORDTYPEID and EMAIL : " + recordTypeId+ " " + email);
         return recordRepository.findRecordsByTypeAndUser(recordTypeId,email);
     }
 }

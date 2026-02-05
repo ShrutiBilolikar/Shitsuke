@@ -27,6 +27,9 @@ public class RecordType {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    @Column
+    private Boolean isGroupMetric = false;
+
     public Type getType() {
         return this.type;
     }
@@ -50,6 +53,13 @@ public class RecordType {
 
     public void setUser(User user) {
         this.user = user;
+    }
+    public Boolean getIsGroupMetric() {
+        return isGroupMetric;
+    }
+
+    public void setIsGroupMetric(Boolean isGroupMetric) {
+        this.isGroupMetric = isGroupMetric;
     }
 }
 

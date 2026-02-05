@@ -21,13 +21,27 @@ public class User {
 
     @Column(nullable = false)
     private Instant createdAt = Instant.now();
+    @Column(unique = true, length = 50)
+    private String username;  // For friend discovery and display
+
 
     public User() {}
     public User(String email, String passwordHash) {
         this.email = email;
         this.passwordHash = passwordHash;
     }
+    // Getter
+    public String getId() {
+        return id;
+    }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
     public String getEmail() {
         return this.email;
     }
