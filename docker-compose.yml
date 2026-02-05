@@ -1,0 +1,32 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: dailyrecords-db
+    environment:
+      POSTGRES_DB: dailyrecords
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - shitsuke-network
+
+  app:
+    build: .
+    container_name: shitsuke-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - shitsuke-network
+
+networks:
+  shitsuke-network:
+    driver: bridge

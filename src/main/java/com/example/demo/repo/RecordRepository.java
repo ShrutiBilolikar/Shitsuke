@@ -53,4 +53,17 @@ public interface RecordRepository extends JpaRepository<Record,String > {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+    // For user streak calculation
+    @Query("SELECT r FROM Record r WHERE r.user.email = :email AND r.recordType.recordTypeId = :recordTypeId ORDER BY r.recordDate DESC")
+    List<Record> findByUserEmailAndRecordTypeIdOrderByRecordDateDesc(
+            @Param("email") String email,
+            @Param("recordTypeId") String recordTypeId
+    );
+
+    // For group streak calculation - get all records for a recordType
+    @Query("SELECT r FROM Record r WHERE r.recordType.recordTypeId = :recordTypeId ORDER BY r.recordDate DESC")
+    List<Record> findByRecordTypeRecordTypeIdOrderByRecordDateDesc(
+            @Param("recordTypeId") String recordTypeId
+    );
 }

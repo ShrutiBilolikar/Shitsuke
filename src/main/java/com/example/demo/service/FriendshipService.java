@@ -31,7 +31,7 @@ public class FriendshipService {
         User recipent = userRepository.findByEmail(recipentEmail).orElseThrow(()->new RuntimeException("Recipent not found"));
         Optional<Friendship>existing = friendshipRepository.findFriendshipBetween(senderEmail,recipentEmail);
         if(existing.isPresent()){
-            throw new IllegalArgumentException("Friend request already send or feindship already exists");
+            throw new IllegalArgumentException("Friend request already send or friendship already exists");
         }
         Friendship friendship = new Friendship();
         friendship.setUser(sender);

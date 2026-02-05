@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.RecordRequest;
+import com.example.demo.dto.RecordCreateRequest;
 import com.example.demo.model.Record;
 import com.example.demo.model.RecordType;
 import com.example.demo.model.Type;
@@ -25,7 +26,12 @@ public class RecordController {
 
     @PostMapping
     public ResponseEntity<Record> createRecord(@RequestBody RecordRequest request, @AuthenticationPrincipal UserDetails userDetails) {
-        Record created = recordService.createRecord(request, userDetails.getUsername());
+        // Convert RecordRequest to RecordCreateRequest
+        RecordCreateRequest createRequest = new RecordCreateRequest();
+        createRequest.setRecordDate(request.getRecordDate());
+        createRequest.setRawData(request.getRawData());
+
+        Record created = recordService.createRecord(createRequest, request.getRecordTypeId(), userDetails.getUsername());
         return ResponseEntity.ok(created);
     }
     @GetMapping("/summary/{recordTypeId}")
