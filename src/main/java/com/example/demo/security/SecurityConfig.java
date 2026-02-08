@@ -106,12 +106,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> {})
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/auth/*", "/h2-console/*").permitAll()
+                        .requestMatchers("/auth/**", "/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
@@ -125,7 +125,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOriginPattern("*");
+        // Allow common development origins (Vite default is 5173, CRA is 3000)
+        configuration.addAllowedOrigin("http://localhost:5173");
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("http://127.0.0.1:5173");
+        configuration.addAllowedOrigin("http://127.0.0.1:3000");
         configuration.addAllowedMethod("GET");
         configuration.addAllowedMethod("POST");
         configuration.addAllowedMethod("PUT");
@@ -133,7 +137,9 @@ public class SecurityConfig {
         configuration.addAllowedMethod("PATCH");
         configuration.addAllowedMethod("OPTIONS");
         configuration.addAllowedHeader("*");
-        configuration.setAllowCredentials(true);
+        // Since we're using JWT tokens (not cookies), credentials aren't needed
+        // But if you need cookies in the future, you'll need to specify exact origins instead of wildcard
+        configuration.setAllowCredentials(false);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

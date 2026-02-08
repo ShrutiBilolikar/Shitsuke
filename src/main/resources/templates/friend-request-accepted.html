@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Friend Request Accepted • Shitsuke</title>
+
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont,
+                 "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+                 "Segoe UI", Roboto, Arial, sans-serif;
+    color: #000000;
+}
+
+.wrapper {
+    max-width: 640px;
+    margin: 40px auto;
+    padding: 20px;
+    background-image: url("https://images.unsplash.com/photo-1522383225653-ed111181a951");
+    background-size: cover;
+    background-position: center;
+    border-radius: 20px;
+}
+
+.container {
+    background-color: rgba(255, 255, 255, 0.96);
+    border-radius: 14px;
+    overflow: hidden;
+    border: 2px solid #000000;
+    position: relative;
+}
+
+/* Decorative ink corners */
+.container:before,
+.container:after {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #000000;
+}
+
+.container:before {
+    top: 10px;
+    left: 10px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.container:after {
+    bottom: 10px;
+    right: 10px;
+    border-left: none;
+    border-top: none;
+}
+
+/* Header */
+.header {
+    padding: 36px 30px;
+    text-align: center;
+    background-color: #c58789;
+    border-bottom: 3px solid #c58789;
+    position: relative;
+    z-index: 1;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+}
+
+.tagline {
+    margin-top: 12px;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+}
+
+/* Content */
+.content {
+    padding: 36px 40px;
+    position: relative;
+    z-index: 1;
+}
+
+h2 {
+    font-size: 22px;
+    margin-bottom: 18px;
+}
+
+p {
+    font-size: 15px;
+    line-height: 1.8;
+    margin-bottom: 18px;
+}
+
+/* Highlight box */
+.request-box {
+    background-color: #ffffff;
+    border-left: 6px solid #c58789;
+    padding: 18px 20px;
+    margin: 30px 0;
+}
+
+.request-box strong {
+    font-size: 16px;
+}
+
+/* Button */
+.button-wrapper {
+    text-align: center;
+    margin: 42px 0;
+}
+
+.button {
+    display: inline-block;
+    padding: 16px 42px;
+    background-color: #c58789;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    border-radius: 999px;
+    border: 2px solid #c58789;
+}
+
+.button:hover {
+    background-color: #ffffff;
+    color: #c58789;
+}
+
+/* Footer */
+.footer {
+    border-top: 1px solid #000000;
+    padding: 22px 30px;
+    font-size: 12px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* Vertical kanji watermark */
+.kanji-watermark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 240px;
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: 0.2em;
+
+    color: #c58789;
+    opacity: 0.09;
+
+    text-align: center;
+    pointer-events: none;
+    z-index: 0;
+}
+</style>
+</head>
+
+<body>
+<div class="wrapper">
+    <div class="container">
+
+        <!-- Kanji watermark: 承認 = Accepted -->
+        <div class="kanji-watermark">
+            承<br>認
+        </div>
+
+        <div class="header">
+            <div class="logo">SHITSUKE</div>
+            <div class="tagline">DISCIPLINE • FOCUS • CONSISTENCY</div>
+        </div>
+
+        <div class="content">
+            <h2>Your request was accepted</h2>
+
+            <p>Hello,</p>
+
+            <div class="request-box">
+                <p>
+                    <strong th:text="${accepterName}">Friend</strong><br>
+                    <span th:text="${accepterEmail}">email@example.com</span>
+                </p>
+                <p>
+                    has accepted your friend request on Shitsuke.
+                </p>
+            </div>
+
+            <p>
+                You can now build habits together, support each other,
+                and stay accountable through shared discipline.
+            </p>
+
+            <div class="button-wrapper">
+                <a th:href="${frontendUrl + '/app/friends'}" class="button">
+                    VIEW FRIENDS
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>This is an automated message from Shitsuke.</p>
+            <p>If you did not expect this email, you may safely ignore it.</p>
+        </div>
+
+    </div>
+</div>
+</body>

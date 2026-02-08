@@ -15,7 +15,18 @@
       "Bash(bash:*)",
       "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzdHJlYWt0ZXN0MkB0ZXN0LmNvbSIsImlhdCI6MTc3MDMxOTE4NywiZXhwIjoxNzcwNDA1NTg3fQ.UI0J-tBDDuUlln06SnzrIq6XuIEJWpZy0k-H81s6YCg\")",
       "Bash(RECORD_TYPE_ID=\"9ad02fa1-b31d-4009-b57b-0b31351651c2\")",
-      "Bash(__NEW_LINE_14622ca1f9d26308__ echo \"=== Testing User Streak Calculation ===\")"
+      "Bash(__NEW_LINE_14622ca1f9d26308__ echo \"=== Testing User Streak Calculation ===\")",
+      "Bash(dir:*)",
+      "Bash(move metro.config.cjs metro.config.js)",
+      "Bash(ls:*)",
+      "Bash(npm:*)",
+      "Bash(timeout 15 npx expo start:*)",
+      "WebFetch(domain:www.nativewind.dev)",
+      "Bash(timeout 20 npx expo start:*)",
+      "Bash(node scripts/patch-metro.js:*)",
+      "Bash(PGPASSWORD=admin psql:*)",
+      "Bash(PGPASSWORD=postgres psql:*)",
+      "Bash(shitsuke-web-frontend/shitsuke-web-frontend/src/services/api/records.api.ts << 'EOF'\nimport { apiClient } from './client';\nimport { Record, RecordCreateRequest } from '@/types/api.types';\n\nexport const recordsApi = {\n  getByRecordType: async \\(recordTypeId: string\\): Promise<Record[]> => {\n    const { data } = await apiClient.get<Record[]>\\(`/records/record-type/${recordTypeId}`\\);\n    return data;\n  },\n\n  create: async \\(recordTypeId: string, request: RecordCreateRequest\\): Promise<Record> => {\n    const { data } = await apiClient.post<Record>\\(`/records/${recordTypeId}`, request\\);\n    return data;\n  },\n};\nEOF)"
     ]
   }
 }
